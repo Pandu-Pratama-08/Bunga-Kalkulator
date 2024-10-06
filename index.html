@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perhitungan Bunga</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: lightblue;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px grey;
+            width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .butt2 {
+            align-items: center;
+            background-image: linear-gradient(144deg, #af40ff, #b423 50%, #00ddeb);
+            border: 0;
+            border-radius: 8px;
+            box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+            box-sizing: border-box;
+            color: black;
+            display: flex;
+            font-size: 18px;
+            justify-content: center;
+            line-height: 1em;
+            width: 50%;
+            text-decoration: none;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 25%;
+        }
+
+        .butt2:active,
+        .butt2:hover {
+            outline: 0;
+        }
+
+        .butt2 span {
+            background-color: rgb(5, 6, 45);
+            padding: 16px 24px;
+            border-radius: 6px;
+            width: 100%;
+            height: 100%;
+            transition: 300ms;
+        }
+
+        .butt2:hover span {
+            background: none;
+        }
+
+        .butt2:active {
+            transform: scale(0.9);
+        }
+
+        .result {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .result h2 {
+            color: #333;
+        }
+
+        .result p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .navbar {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .navbar button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .navbar button.active {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Kalkulator</h1>
+
+        <div class="navbar">
+            <button id="btnTunggal" class="active" onclick="showForm('tunggal')">Bunga Tunggal</button>
+            <button id="btnMajemuk" onclick="showForm('majemuk')">Bunga Majemuk</button>
+        </div>
+
+        <!-- Form Bunga Tunggal -->
+        <form id="formTunggal">
+            <label for="pokokTunggal">Pokok Pinjaman (Rp):</label>
+            <input type="number" id="pokokTunggal" required>
+
+            <label for="bungaTunggal">Persentase Bunga (%):</label>
+            <input type="number" step="0.01" id="bungaTunggal" required>
+
+            <label for="waktuTunggal">Waktu Pinjaman:</label>
+            <input type="number" id="waktuTunggal" required>
+
+            <label for="jenisWaktuTunggal">Jenis Waktu:</label>
+            <select id="jenisWaktuTunggal" required>
+                <option value="bulan">Bulan</option>
+                <option value="triwulan">Triwulan</option>
+                <option value="caturwulan">Caturwulan</option>
+                <option value="semester">Semester</option>
+                <option value="tahun">Tahun</option>
+            </select>
+
+            <button type="button" class="butt2" onclick="hitungBungaTunggal()">Hitung Bunga Tunggal</button>
+        </form>
+
+        <!-- Form Bunga Majemuk -->
+        <form id="formMajemuk" style="display:none;">
+            <label for="pokokMajemuk">Pokok Pinjaman (Rp):</label>
+            <input type="number" id="pokokMajemuk" required>
+
+            <label for="bungaMajemuk">Persentase Bunga (%):</label>
+            <input type="number" step="0.01" id="bungaMajemuk" required>
+
+            <label for="waktuMajemuk">Waktu Pinjaman:</label>
+            <input type="number" id="waktuMajemuk" required>
+
+            <label for="jenisWaktuMajemuk">Jenis Waktu:</label>
+            <select id="jenisWaktuMajemuk" required>
+                <option value="bulan">Bulan</option>
+                <option value="triwulan">Triwulan</option>
+                <option value="caturwulan">Caturwulan</option>
+                <option value="semester">Semester</option>
+                <option value="tahun">Tahun</option>
+            </select>
+
+            <button type="button" class="butt2" onclick="hitungBungaMajemuk()">Hitung Bunga Majemuk</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function showForm(tipe) {
+            var formTunggal = document.getElementById('formTunggal');
+            var formMajemuk = document.getElementById('formMajemuk');
+            var btnTunggal = document.getElementById('btnTunggal');
+            var btnMajemuk = document.getElementById('btnMajemuk');
+
+            if (tipe === 'tunggal') {
+                formTunggal.style.display = 'block';
+                formMajemuk.style.display = 'none';
+                btnTunggal.classList.add('active');
+                btnMajemuk.classList.remove('active');
+            } else if (tipe === 'majemuk') {
+                formTunggal.style.display = 'none';
+                formMajemuk.style.display = 'block';
+                btnTunggal.classList.remove('active');
+                btnMajemuk.classList.add('active');
+            }
+        }
+
+        function hitungBungaTunggal() {
+            var pokok = parseFloat(document.getElementById('pokokTunggal').value);
+            var bunga = parseFloat(document.getElementById('bungaTunggal').value);
+            var waktu = parseFloat(document.getElementById('waktuTunggal').value);
+            var jenisWaktu = document.getElementById('jenisWaktuTunggal').value;
+
+            // Validasi input
+            if (isNaN(pokok) || isNaN(bunga) || isNaN(waktu) || pokok <= 0 || bunga <= 0 || waktu <= 0) {
+                alert("Masukkan nilai yang valid");
+                return;
+            }
+
+            switch (jenisWaktu) {
+                case "bulan":
+                    waktu = waktu * 1 / 12;
+                    break;
+                case 'triwulan':
+                    waktu = waktu * 3 / 12;
+                    break;
+                case 'caturwulan':
+                    waktu = waktu * 4 / 12;
+                    break;
+                case 'semester':
+                    waktu = waktu * 6 / 12;
+                    break;
+                case 'tahun':
+                    break;
+                default:
+                    alert("Jenis waktu tidak valid.");
+                    return;
+            }
+
+            var hasilBunga = pokok * (bunga / 100) * waktu;
+            var totalPinjaman = pokok + hasilBunga;
+
+            document.getElementById('result').innerHTML = `
+                <div class="result">
+                    <h2>Hasil Perhitungan Bunga Tunggal</h2>
+                    <p>Pokok Pinjaman: Rp ${pokok.toLocaleString()}</p>
+                    <p>Bunga: Rp ${hasilBunga.toLocaleString()}</p>
+                    <p><strong>Total Pinjaman (Pokok + Bunga): Rp ${totalPinjaman.toLocaleString()}</strong></p>
+                </div>`;
+        }
+    </script>
+</body>
+
+</html>
